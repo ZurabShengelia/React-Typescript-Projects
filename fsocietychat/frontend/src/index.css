@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+}
+
+:root {
+  --fs-green: #39ff14;
+  --fs-green-rgb: 57,255,20;
+  --watermark-opacity: 0.12;
+  --watermark-maxh: 55vh;
+}
+
+body {
+  @apply bg-black text-green-400 font-mono antialiased;
+}
+
+/* Watermark helper class */
+.fs-watermark {
+  pointer-events: none;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  opacity: var(--watermark-opacity);
+  z-index: 0;
+  max-height: var(--watermark-maxh);
+}
+
+.fs-watermark img{
+  display:block;
+  max-width: 80vw;
+  max-height: var(--watermark-maxh);
+  width: auto;
+  height: auto;
+  filter: grayscale(1) contrast(1.05) brightness(0.85) sepia(0.2) saturate(1.4) hue-rotate(60deg);
+  mix-blend-mode: screen;
+}
+
+/* Intro overlay: matrix-style scanlines + fade */
+.intro-matrix {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: black;
+  z-index: 80;
+}
+
+.matrix-text {
+  color: var(--fs-green);
+  font-family: monospace;
+  text-shadow: 0 0 6px rgba(57,255,20,0.6);
+  animation: matrix-fade 1.6s ease-in-out, flicker 1.2s linear;
+}
+
+@keyframes flicker {
+  0% { opacity: 0.15; text-shadow: 0 0 2px rgba(var(--fs-green-rgb), .2); }
+  20% { opacity: 1; text-shadow: 0 0 12px rgba(var(--fs-green-rgb), .9); }
+  40% { opacity: 0.5; text-shadow: 0 0 6px rgba(var(--fs-green-rgb), .6); }
+  60% { opacity: 1; text-shadow: 0 0 14px rgba(var(--fs-green-rgb), 1); }
+  100% { opacity: 1; }
+}
+
+/* subtle moving scanlines */
+.scanlines::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(57,255,20,0.02) 1px, transparent 1px);
+  background-size: 100% 6px;
+  animation: scan 3s linear infinite;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+@keyframes scan {
+  from { background-position-y: 0; }
+  to { background-position-y: 6px; }
+}
+
+@keyframes matrix-fade {
+  0% { opacity: 0; transform: translateY(8px); }
+  60% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 1; }
+}
+
+/* Thin, low-contrast scrollbar that fits the obsidian aesthetic instead of
+  the default chunky system scrollbar. */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #1c2536;
+  border-radius: 4px;
+}
