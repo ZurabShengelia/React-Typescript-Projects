@@ -17,9 +17,7 @@ const MONGO_URI = (process.env.MONGO_URI || process.env.MONGODB_URI) as string |
 
 const allowedOrigins = [
   'http://localhost:5173',
-  process.env.CLIENT_ORIGIN,
-  process.env.CLIENT_URL,
-  process.env.FRONTEND_URL
+  'https://fsociety-frontend-am8x.onrender.com'
 ].filter(Boolean) as string[];
 
 if (!MONGO_URI) {
