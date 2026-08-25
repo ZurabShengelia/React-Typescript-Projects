@@ -14,7 +14,7 @@ import { initSocket } from './socket/index';
 
 const PORT = Number(process.env.PORT) || 4000;
 const MONGO_URI = (process.env.MONGO_URI || process.env.MONGODB_URI) as string | undefined;
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || process.env.CLIENT_URL || process.env.FRONTEND_URL || 'http://localhost:5173';
 
 if (!MONGO_URI) {
   throw new Error('MONGO_URI is not set. Add it to your .env file (see .env.example).');
