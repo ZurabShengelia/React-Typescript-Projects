@@ -14,14 +14,20 @@ import { initSocket } from './socket/index';
 
 const PORT = Number(process.env.PORT) || 4000;
 const MONGO_URI = (process.env.MONGO_URI || process.env.MONGODB_URI) as string | undefined;
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || process.env.CLIENT_URL || process.env.FRONTEND_URL || 'http://localhost:5173';
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  process.env.CLIENT_ORIGIN,
+  process.env.CLIENT_URL,
+  process.env.FRONTEND_URL
+].filter(Boolean) as string[];
 
 if (!MONGO_URI) {
   throw new Error('MONGO_URI is not set. Add it to your .env file (see .env.example).');
 }
 
 const app = express();
-app.use(cors({ origin: CLIENT_ORIGIN, credentials: true }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 
 app.get('/api/health', (_req, res) => {
@@ -37,7 +43,7 @@ const httpServer = http.createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: CLIENT_ORIGIN,
+    origin: allowedOrigins,
     credentials: true,
   },
 });
