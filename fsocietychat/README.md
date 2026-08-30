@@ -71,9 +71,4 @@ Notes for maintainers
   - Backend: `dev`, `build`, `start`
   - Frontend: `dev`, `build`, `preview`
 
-Contributing
-- Open issues or PRs. For visual/theme-only PRs keep changes isolated to the frontend.
-
-License
-- MIT
 
