@@ -3,7 +3,12 @@ import { logger } from "../utils/logger";
 
 const isConfigured = Boolean(env.brevoApiKey && env.emailUser);
 
-export async function sendEmail(to: string, subject: string, html: string): Promise<void> {
+export async function sendEmail(
+  to: string,
+  subject: string,
+  html: string,
+  replyTo?: string
+): Promise<void> {
   if (!isConfigured) {
     logger.warn(`[email not configured — logging instead] To: ${to} | Subject: ${subject}`);
     logger.debug(html);
@@ -20,6 +25,7 @@ export async function sendEmail(to: string, subject: string, html: string): Prom
     body: JSON.stringify({
       sender: { name: "Script Kiddie", email: env.emailUser },
       to: [{ email: to }],
+      ...(replyTo ? { replyTo: { email: replyTo } } : {}),
       subject,
       htmlContent: html,
     }),
@@ -30,6 +36,15 @@ export async function sendEmail(to: string, subject: string, html: string): Prom
     logger.error("Failed to send email", { to, subject, status: res.status, detail });
     throw new Error(`Email API responded ${res.status}`);
   }
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function codeEmailHtml(heading: string, code: string, bodyLine: string): string {
@@ -125,5 +140,39 @@ export async function sendEmailChangedNoticeEmail(to: string, newEmail: string):
         </p>
       </div>
     `
+  );
+}
+
+const SIMPLE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export async function sendContactMessageEmail(
+  name: string,
+  fromEmail: string,
+  message: string
+): Promise<void> {
+  if (!env.emailUser) {
+    logger.warn("[contact message not emailed — EMAIL_USER is not set]");
+    return;
+  }
+
+  const safeName = escapeHtml(name);
+  const safeEmail = escapeHtml(fromEmail);
+  const safeMessage = escapeHtml(message).replace(/\n/g, "<br />");
+
+  await sendEmail(
+    env.emailUser,
+    `New contact message from ${name.slice(0, 60)}`,
+    `
+      <div style="font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width: 560px; margin: 0 auto;">
+        <h2 style="color: #0A0E16;">New contact message</h2>
+        <p style="color: #333; font-size: 15px; line-height: 1.5;">
+          <strong>From:</strong> ${safeName} (${safeEmail})
+        </p>
+        <p style="color: #333; font-size: 15px; line-height: 1.6; background: #f2f4f7; padding: 16px; border-radius: 8px;">
+          ${safeMessage}
+        </p>
+      </div>
+    `,
+    SIMPLE_EMAIL.test(fromEmail) ? fromEmail : undefined
   );
 }
