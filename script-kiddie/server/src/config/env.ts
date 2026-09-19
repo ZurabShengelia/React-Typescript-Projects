@@ -39,4 +39,5 @@ export const env = {
 
   emailUser: process.env.EMAIL_USER,
   emailAppPassword: process.env.EMAIL_APP_PASSWORD,
+  brevoApiKey: process.env.BREVO_API_KEY ?? "",
 };
