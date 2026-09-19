@@ -4,13 +4,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert } from "@/components/ui/alert";
+import { api, getErrorMessage } from "@/lib/api";
 
 export default function Contact() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSent(true);
+    setLoading(true);
+    setError(null);
+    try {
+      await api.post("/contact", { name, email, message });
+      setSent(true);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -26,13 +41,14 @@ export default function Contact() {
         <Alert variant="success" className="mt-8">Thanks — we'll get back to you shortly.</Alert>
       ) : (
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+          {error && <Alert variant="danger">{error}</Alert>}
           <div className="space-y-1.5">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" required />
+            <Input id="name" required maxLength={100} value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" required />
+            <Input id="email" type="email" required maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="message">Message</Label>
@@ -40,10 +56,13 @@ export default function Contact() {
               id="message"
               required
               rows={5}
+              maxLength={5000}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               className="w-full rounded-md border border-base-border bg-base-panel px-3 py-2 text-sm text-ink placeholder:text-ink-faint focus-visible:outline-none focus-visible:border-accent focus-visible:ring-1 focus-visible:ring-accent"
             />
           </div>
-          <Button type="submit">Send message</Button>
+          <Button type="submit" disabled={loading}>{loading ? "Sending…" : "Send message"}</Button>
         </form>
       )}
     </div>
