@@ -80,7 +80,7 @@ export default function Terms() {
         <section>
           <h2 className="text-lg font-semibold text-ink">10. Contact</h2>
           <p className="mt-2">
-            Questions about these terms can be sent to <span className="text-ink">legal@scriptkiddie.dev</span>.
+            Questions about these terms can be sent to <span className="text-ink">scriptkiddie471@gmail.com</span>.
           </p>
         </section>
       </div>
