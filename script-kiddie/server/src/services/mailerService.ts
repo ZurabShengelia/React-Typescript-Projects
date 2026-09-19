@@ -12,6 +12,10 @@ if (isConfigured) {
       user: env.emailUser,
       pass: env.emailAppPassword,
     },
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 10_000,
+    family: 4,
   });
 }
 
