@@ -16,7 +16,7 @@ if (isConfigured) {
     greetingTimeout: 10_000,
     socketTimeout: 10_000,
     family: 4,
-  });
+  } as nodemailer.TransportOptions);
 }
 
 export async function sendEmail(to: string, subject: string, html: string): Promise<void> {
