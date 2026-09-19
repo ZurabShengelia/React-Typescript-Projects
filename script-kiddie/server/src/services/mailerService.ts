@@ -1,41 +1,34 @@
-import nodemailer, { Transporter, TransportOptions } from "nodemailer";
 import { env } from "../config/env";
 import { logger } from "../utils/logger";
 
-const isConfigured = Boolean(env.emailUser && env.emailAppPassword);
-
-let transporter: Transporter | null = null;
-if (isConfigured) {
-  transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: env.emailUser,
-      pass: env.emailAppPassword,
-    },
-    connectionTimeout: 10_000,
-    greetingTimeout: 10_000,
-    socketTimeout: 10_000,
-    family: 4,
-  } as TransportOptions);
-}
+const isConfigured = Boolean(env.brevoApiKey && env.emailUser);
 
 export async function sendEmail(to: string, subject: string, html: string): Promise<void> {
-  if (!transporter) {
+  if (!isConfigured) {
     logger.warn(`[email not configured — logging instead] To: ${to} | Subject: ${subject}`);
     logger.debug(html);
     return;
   }
 
-  try {
-    await transporter.sendMail({
-      from: `"Script Kiddie" <${env.emailUser}>`,
-      to,
+  const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "api-key": env.brevoApiKey,
+      "content-type": "application/json",
+      accept: "application/json",
+    },
+    body: JSON.stringify({
+      sender: { name: "Script Kiddie", email: env.emailUser },
+      to: [{ email: to }],
       subject,
-      html,
-    });
-  } catch (err) {
-    logger.error("Failed to send email", { to, subject, error: err });
-    throw err;
+      htmlContent: html,
+    }),
+  });
+
+  if (!res.ok) {
+    const detail = await res.text();
+    logger.error("Failed to send email", { to, subject, status: res.status, detail });
+    throw new Error(`Email API responded ${res.status}`);
   }
 }
 
