@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+
+  :root {
+    color-scheme: dark;
+
+    --color-base: #05080C;
+    --color-panel: #0B1015;
+    --color-raised: #121A20;
+    --color-border: #1C262D;
+    --color-border-strong: #2C3A43;
+
+    --color-ink: #E9F1EC;
+    --color-ink-muted: #9AA8A0;
+    --color-ink-faint: #67766D;
+
+    --color-accent: #22C55E;
+    --color-accent-hover: #4ADE80;
+    --color-accent-muted: rgba(34, 197, 94, 0.12);
+
+    --color-accent-ink: #04120A;
+    --color-focus: #4ADE80;
+
+    --color-terminal-bg: #05080C;
+    --color-terminal-ink: #D6F1DF;
+
+    --color-chart-line: #22C55E;
+    --color-chart-grid: #1C262D;
+    --color-chart-axis: #67766D;
+
+    --color-success: #22C55E;
+    --color-success-muted: rgba(34, 197, 94, 0.12);
+    --color-warning: #E8A33D;
+    --color-warning-muted: rgba(232, 163, 61, 0.12);
+    --color-danger: #F0555A;
+    --color-danger-muted: rgba(240, 85, 90, 0.12);
+
+    --color-scrim: rgba(0, 0, 0, 0.66);
+  }
+
+  :root.light {
+    color-scheme: light;
+
+    --color-base: #FAFAFA;
+    --color-panel: #FFFFFF;
+    --color-raised: #F4F4F4;
+    --color-border: #E4E4E4;
+    --color-border-strong: #C9C9C9;
+
+    --color-ink: #0A0A0A;
+    --color-ink-muted: #5C5C5C;
+    --color-ink-faint: #8A8A8A;
+
+    --color-accent: #0A0A0A;
+    --color-accent-hover: #262626;
+    --color-accent-muted: rgba(10, 10, 10, 0.06);
+    --color-accent-ink: #FFFFFF;
+    --color-focus: #0A0A0A;
+
+    --color-terminal-bg: #0B1015;
+    --color-terminal-ink: #D6F1DF;
+
+    --color-chart-line: #0A0A0A;
+    --color-chart-grid: #E4E4E4;
+    --color-chart-axis: #8A8A8A;
+
+    --color-success: #15803D;
+    --color-success-muted: rgba(21, 128, 61, 0.10);
+    --color-warning: #B45309;
+    --color-warning-muted: rgba(180, 83, 9, 0.10);
+    --color-danger: #B42318;
+    --color-danger-muted: rgba(180, 35, 24, 0.10);
+
+    --color-scrim: rgba(10, 10, 10, 0.32);
+  }
+
+  * {
+    @apply border-base-border;
+  }
+
+  html, body, #root {
+    height: 100%;
+    background-color: var(--color-base);
+  }
+
+  body {
+
+    @apply bg-base text-base text-ink font-sans antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  ::selection {
+    background: var(--color-accent-muted);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-semibold tracking-tight;
+  }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-border);
+    border-radius: 8px;
+    border: 2px solid var(--color-base);
+  }
+}
+
+@layer utilities {
+  .text-mono-label {
+    @apply font-mono text-xs tracking-wide text-ink-faint;
+  }
+
+  .scroll-anchor-bottom {
+    overflow-anchor: auto;
+  }
+}
