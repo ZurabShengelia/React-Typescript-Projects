@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { User, IUser } from "../models/User";
 import { RefreshToken } from "../models/RefreshToken";
 import { ApiError } from "../utils/ApiError";
+import { logger } from "../utils/logger";
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from "../utils/tokens";
 import {
   generateVerificationCode,
@@ -20,6 +21,12 @@ import {
 } from "./mailerService";
 
 const SALT_ROUNDS = 12;
+
+function sendVerificationEmailInBackground(email: string, code: string): void {
+  sendVerificationCodeEmail(email, code).catch((err) => {
+    logger.error("Verification email failed to send", { email, error: err });
+  });
+}
 
 export async function registerUser(name: string, email: string, password: string): Promise<IUser> {
   const existing = await User.findOne({ email: email.toLowerCase() });
@@ -40,7 +47,7 @@ export async function registerUser(name: string, email: string, password: string
     emailVerificationAttempts: 0,
   });
 
-  await sendVerificationCodeEmail(user.email, code);
+  sendVerificationEmailInBackground(user.email, code);
   return user;
 }
 
@@ -83,7 +90,7 @@ export async function resendVerificationCode(email: string): Promise<void> {
   user.emailVerificationAttempts = 0;
   await user.save();
 
-  await sendVerificationCodeEmail(user.email, code);
+  sendVerificationEmailInBackground(user.email, code);
 }
 
 export async function verifyCredentials(email: string, password: string): Promise<IUser> {
