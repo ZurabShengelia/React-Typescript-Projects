@@ -95,6 +95,4 @@ secrets are generated automatically.
 | `client/` | `npm run build` | Production build |
 | `client/` | `npm run lint` | Run ESLint |
 
-## License
 
-*(add your license here, e.g. MIT — or remove this section if you're keeping it private)*
